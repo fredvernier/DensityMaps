@@ -1,0 +1,12 @@
+body {
+  letter-spacing: normal;
+  text-align: left;
+  word-spacing: normal;
+  font-family: Arial;
+  color: #000000; 
+  background-image: url("../imgs/BackgroundBleuC.gif");
+}
+
+canvas{
+ /* filter:drop-shadow(5px 5px 15px rgba(0,0,0,0.5));*/
+}

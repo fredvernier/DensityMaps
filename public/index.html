@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>Density Maps loading and Visualization</title>
+  <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Sofia&amp;effect=fire">
+</head>
+
+<body onload = init()>
+  <div id="contforvis" class="w3-container w3-display-middle w3-center"> 
+    <h1 class="w3-sofia font-effect-fire">Density Maps <br>Loading &amp; Visualization </h1>
+  </div>
+  <div class="w3-top">
+    <div class="w3-bar w3-blue"> 
+      <button  class="w3-button" onclick="debug()">Density Maps</button>
+
+      <div class="w3-dropdown-hover">
+        <button class="w3-button">Data</button>
+        <div id="datamenu" class="w3-dropdown-content w3-bar-block ">
+          <button class="w3-button" onclick="reset()">Reset</button>
+        </div>
+      </div>
+
+    <div class="w3-dropdown-hover">
+      <button class="w3-button">Blur</button>
+      <div class="w3-dropdown-content w3-bar-block ">
+        <div class="w3-bar-item"><input class="w3-radio" type="radio" name="blurtype" onchange="applyBlur()" value="" checked ><label> No</label></div>
+        <div class="w3-bar-item"><input class="w3-radio" type="radio" name="blurtype" onchange="applyBlur()" value="h"><label> Horizontal</label></div>
+        <div class="w3-bar-item"><input class="w3-radio" type="radio" name="blurtype" onchange="applyBlur()" value="v"><label> Vertical</label></div>
+        <div class="w3-bar-item"><input class="w3-radio" type="radio" name="blurtype" onchange="applyBlur()" value="both"><label> Both</label></div>
+        <input onchange="applyBlur()"  oninput="applyBlur()" type="range" id="rblur" name="rblur" min="0" max="48" value="8">
+      </div>
+    </div>
+
+
+    <div class="w3-dropdown-hover">
+      <button class="w3-button">Render</button>
+      <div class="w3-dropdown-content w3-bar-block w3-card-4">
+        <button class="w3-button" onclick="render()">Render</button>
+        <input class="w3-input" onchange="render()" oninput="render()" type="range" id="mi" name="mi" min="0" max="10000" value="1000">
+        <input class="w3-input" onchange="render()" oninput="render()" type="range" id="ma" name="ma" min="0" max="1000" value="400">
+        <div class="w3-bar-item"><input class="w3-radio" type="radio" name="colorscale" onchange="applyColorScale()" value="imgs/BTC.png" checked > <img height="24" src="imgs/BTC.png"/></div>
+        <div class="w3-bar-item"><input class="w3-radio" type="radio" name="colorscale" onchange="applyColorScale()" value="imgs/BTY.png"> <img height="24" src="imgs/BTY.png"/></div>
+      </div>
+    </div>
+
+    <a href="#" class="w3-bar-item w3-button w3-right"><img height="24" src="imgs/ParisSaclay.png"/></a>
+  </div>
+</div>
+
+  <script type="module" src="js/client.js"></script>
+</body>
+
+</html>
