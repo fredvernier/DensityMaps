@@ -14,6 +14,10 @@ module.exports = {
     })
   ],
   output: {
+    library: {
+      name: "DensityMaps",
+      type: "umd"
+    },
     //path: path.resolve(__dirname, 'public/js'),
     filename: 'js/client.js'
   }
