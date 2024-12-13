@@ -1,8 +1,7 @@
-import _ from 'lodash';
+//import _ from 'lodash';
 import { decode } from "fast-png";
-import  $  from "jquery";
+//import  $  from "jquery";
 
-console.log("client side")
 const UPDATE_INTERVAL = 40; // Update every 200ms (5 times/sec)
 let hBlurPipeline, vBlurPipeline;
 let device = null;
@@ -17,10 +16,20 @@ let vertexBuffer;
 let vertices;
 let cellStateArray;
 let cellStateStorage;
-let radius = 16;
+
 let uniformAdjustBuffer, uniformBlurBuffer;
 let img;
 let pipelines = [];
+let gk;
+
+export let params = {
+  mi : 0,
+  ma : 100,
+  radius : 16, 
+  blurtype : '', 
+  colorscale : ''
+}
+let canvastag;
 
 function makeGaussKernel(sigma){
   if(sigma==0)
@@ -44,52 +53,67 @@ function makeGaussKernel(sigma){
   return kernel;
 }
 
-export function init(){
-  $.ajax({
-    url: "/datalist",
-    method: 'GET',
-  }).done(function(data) {
-    for(let d of data)
-      $("#datamenu").append($('<button class="w3-bar-item w3-button w3-mobile" onclick="load(\''+d+'\')">'+d+'</button>'))
-  }) .fail(function(err) {
-    alert( "error" );
-    console.log(err)
-  });
-}
-window.init = init;
 
 export function debug(){
+  gk = makeGaussKernel(params.radius);
   let kt = "** "
   for(let v of gk) 
     kt= kt+v+" ";
   console.log(kt);
-}
-window.debug = debug;
-
-let gk = makeGaussKernel(radius);
-
-export function load(dataname){
-  $.ajax({
-    url: "/p",
-    data:{"dataname":dataname},
-    contentType: "image/png",
-    method: 'GET',
-    xhrFields: { responseType: 'arraybuffer'}
-  }).done(function(data) {
-    img=decode(data);
-    let $canvastag = $('<canvas id="canvastag" width="'+img.width+'" height="'+img.height+'"></canvas>')
-    $("#contforvis").html($canvastag);
-    createPipeline(img, $("#canvastag")[0]);
-  }) .fail(function(err) {
-    alert( "error" );
-    console.log(err)
+  load({
+    width:8,
+    height:8,
+    data: new Uint16Array([
+      0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 8,10, 8, 0, 0,
+      0, 0, 8,13,14,13, 8, 0,
+      0, 0,10,14,16,14,10, 0,
+      0, 0, 8,13,14,13, 8, 0,
+      0, 0, 0, 8,10, 8, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0
+    ])
   });
 }
-window.load = load;
 
-async function createPipeline(img, canvastag){
+
+export async function load(dataSource, containerid='contforvis', tagid='canvastag'){
+  //console.log(typeof dataSource)
+  gk = makeGaussKernel(params.radius);
+  if(typeof dataSource=="string"){
+    try {
+      const response = await fetch("/p?dataname="+dataSource, {
+        method: "GET",
+        headers: {
+        /* Accept: 'image/png',*/
+          'Content-Type': "application/octet-stream"
+        },
+        responseType: "arraybuffer"
+      });
+      if (!response.ok) 
+        throw new Error(`Response status: ${response.status}`);
+
+      const data = await response.arrayBuffer();
+      img=decode(data);
+      document.getElementById(containerid).innerHTML = '<canvas id="canvastag" width="'+img.width+'" height="'+img.height+'"></canvas>';
+
+      createPipeline(img,document.getElementById(tagid));
+    } catch (error) {
+      console.error("error.message");
+      console.error(error.message);
+    }
+  } else if(typeof dataSource=="object"){
+    document.getElementById(containerid).innerHTML = '<canvas id="canvastag" width="'+dataSource.width+'" height="'+dataSource.height+'"></canvas>';
+    createPipeline(dataSource,document.getElementById(tagid));
+  }
+}
+
+
+async function createPipeline(img, ct){
+  canvastag = ct;
   if (!img) return
   //console.log("createPipeline NEW")
+  //console.log(img)
   GRID_SIZE_X = img.width;
   GRID_SIZE_Y = img.height;
 
@@ -479,28 +503,22 @@ async function createPipeline(img, canvastag){
 }
 
 export async function applyColorScale(){
-  let colorscale = $('input[name="colorscale"]:checked').val();
   
 }
-window.applyColorScale = applyColorScale;
 
 export async function applyBlur(){
-  let blurtype = $('input[name="blurtype"]:checked').val();
-  radius = parseInt($("#rblur").val());
-  //console.log("applyHBlur "+radius)
-  gk = makeGaussKernel(radius);
+  gk = makeGaussKernel(params.radius);
 
-  await createPipeline(img, $("#canvastag")[0]);
+  await createPipeline(img, canvastag);
   pipelines = [];
-  if(blurtype=="h")
+  if(params.blurtype=="h")
     pipelines = [hBlurPipeline];
-  else  if(blurtype=="v")
+  else  if(params.blurtype=="v")
     pipelines = [vBlurPipeline];
-  else if(blurtype=="both")
+  else if(params.blurtype=="both")
     pipelines = [hBlurPipeline, vBlurPipeline];
   updateData();
 }
-window.applyBlur = applyBlur;
 
 // Move all of our rendering code into a function
  function updateData() {
@@ -531,11 +549,8 @@ window.applyBlur = applyBlur;
 
 export function render() {
   if(!device) return;
-  let mi = parseInt($("#mi").val());
-  let ma = parseInt($("#ma").val());
-  //console.log("  render "+mi)
 
-  const uniformAdjustArray = new Float32Array([mi, mi+ma, 0.0001]);
+  const uniformAdjustArray = new Float32Array([params.mi, params.mi+params.ma, 0.0001]);
   device.queue.writeBuffer(uniformAdjustBuffer, 0, uniformAdjustArray);
 
   let t = performance.now();
@@ -562,16 +577,15 @@ export function render() {
   device.queue.submit([encoder.finish()]);
   //console.log("render: "+(performance.now()-t));
 }
-window.render = render;
 
-let updater= null;
+
+/*let updater= null;
 export function start (){
   console.log("start")
   // Schedule updateData() to run repeatedly
   if (updater==null)
     updater = setInterval(updateData, UPDATE_INTERVAL);
 }
-window.start = start;
 
 
 export function stop (){
@@ -579,8 +593,7 @@ export function stop (){
   clearInterval(updater);
   updater=null;
   render();
-}
-window.stop = stop;
+}*/
 
 
 export function reset (){
@@ -590,11 +603,3 @@ export function reset (){
   device.queue.writeBuffer(cellStateStorage[1], 0, cellStateArray);
   render();
 }
-window.reset = reset;
-
-/* pass.setPipeline(cellPipeline);
-pass.setVertexBuffer(0, vertexBuffer);
-pass.setBindGroup(0, bindGroup); // 2 floats = grid size
-pass.draw(vertices.length / 2,  GRID_SIZE * GRID_SIZE); // 6 vertices .. many times
-pass.end();
-device.queue.submit([encoder.finish()]);*/
