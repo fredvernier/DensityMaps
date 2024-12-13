@@ -71,9 +71,9 @@ export function debug(){
       0, 0,10,14,16,14,10, 0,
       0, 0, 8,13,14,13, 8, 0,
       0, 0, 0, 8,10, 8, 0, 0,
-      0, 0, 0, 0, 0, 0, 0, 0
+      0, 0, 0, 8,10, 8, 0, 0
     ])
-  });
+  }, "contid");
 }
 
 
@@ -95,7 +95,7 @@ export async function load(dataSource, containerid='contforvis', tagid='canvasta
 
       const data = await response.arrayBuffer();
       img=decode(data);
-      document.getElementById(containerid).innerHTML = '<canvas id="canvastag" width="'+img.width+'" height="'+img.height+'"></canvas>';
+      document.getElementById(containerid).innerHTML = '<canvas id="'+tagid+'" width="'+img.width+'" height="'+img.height+'"></canvas>';
 
       createPipeline(img,document.getElementById(tagid));
     } catch (error) {
@@ -103,7 +103,7 @@ export async function load(dataSource, containerid='contforvis', tagid='canvasta
       console.error(error.message);
     }
   } else if(typeof dataSource=="object"){
-    document.getElementById(containerid).innerHTML = '<canvas id="canvastag" width="'+dataSource.width+'" height="'+dataSource.height+'"></canvas>';
+    document.getElementById(containerid).innerHTML = '<canvas id="'+tagid+'" width="'+dataSource.width+'" height="'+dataSource.height+'"></canvas>';
     createPipeline(dataSource,document.getElementById(tagid));
   }
 }

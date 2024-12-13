@@ -11,7 +11,7 @@ const https    = require('https');
 
 const webpack = require('webpack');
 const middleware = require('webpack-dev-middleware'); //webpack hot reloading middleware
-const webpackConfig = require('./webpack.config');
+const webpackConfig = require('../webpack.config');
 const compiler = webpack(webpackConfig);
 const hmr = require("webpack-hot-middleware");
 
@@ -37,7 +37,7 @@ app.use(middleware(compiler, {
 
 
 app.get('/p', (req, res) => {
-  let binary = fs.readFileSync('./data/'+req.query.dataname);
+  let binary = fs.readFileSync(path.join(__dirname, '../data',req.query.dataname));
   //console.log(typeof binary)
   //console.log(req.query.dataname)
 
@@ -51,19 +51,18 @@ app.get('/p', (req, res) => {
     max0 = Math.max(max0,imgdata[i] )
     sum += imgdata[i];
   }
- // img.text.toto = 258;
+  //img.text = "258";
   //console.log("res= "+min0+" ... "+max0+" => "+sum)
   res.set('content-type', "image/png");
   let img2=fastpng.encode(img);
-  //console.log(img2.buffer)
-
+  
   res.send(Buffer.from(img2.buffer));
 })
 
 
 app.get('/datalist', (req, res) => {
   let ll =
-  fs.readdirSync('./data', {withFileTypes: true})
+  fs.readdirSync(path.join(__dirname, '../data'), {withFileTypes: true})
     .filter(item => !item.isDirectory()&&item.isFile()&&item.name.endsWith(".png"))
     .map(item => item.name)
   res.json(ll);
@@ -72,13 +71,13 @@ app.get('/datalist', (req, res) => {
 
 app.get('/', (req, res) => {
   //console.log("/")
-  res.sendFile(path.join(__dirname, './public', 'index.html'))
+  res.sendFile(path.join(__dirname, '../public', 'index.html'))
 })
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
 })
 
-app.use('/css',express.static(__dirname+'/public/css'));
-app.use('/imgs',express.static(__dirname+'/public/imgs'));
+app.use('/css',express.static(path.join(__dirname, '../public/css')));
+app.use('/imgs',express.static(path.join(__dirname, '../public/imgs'))); 
 //app.use('/js',express.static(__dirname+'/public/js'));

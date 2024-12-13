@@ -28,6 +28,7 @@
     function updateUI() {
       DensityMaps.params.mi = parseFloat(document.getElementById('mi').value);
       DensityMaps.params.ma = parseFloat(document.getElementById('ma').value);
+      //console.log(DensityMaps.params.mi+"..."+DensityMaps.params.ma)
 
       DensityMaps.params.blurtype = document.querySelector( 'input[name="blurtype"]:checked').value;
       DensityMaps.params.radius = parseFloat(document.getElementById('rblur').value);  
@@ -38,6 +39,7 @@
 </head>
 
 <body onload = init()>
+  
   <div id="contforvis" class="w3-container w3-display-middle w3-center"> 
     <h1 class="w3-sofia font-effect-fire">Density Maps <br>Loading &amp; Visualization </h1>
   </div>
@@ -76,7 +78,7 @@
       </div>
     </div>
 
-    <a href="#" class="w3-bar-item w3-button w3-right"><img height="24" src="imgs/ParisSaclay.png"/></a>
+    <a href="#" class="w3-bar-item w3-button w3-right"><img height="24" src="imgs/ParisSaclay.png"/></a><div id="contid" > ff</div>
   </div>
 </div>
 </body>
