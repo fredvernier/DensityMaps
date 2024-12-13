@@ -24,7 +24,7 @@ let gk;
 
 export let params = {
   mi : 0,
-  ma : 100,
+  ma : 8,
   radius : 16, 
   blurtype : '', 
   colorscale : ''
@@ -73,11 +73,13 @@ export function debug(){
       0, 0, 0, 8,10, 8, 0, 0,
       0, 0, 0, 8,10, 8, 0, 0
     ])
-  }, "contid");
+  }, "contid", "canvastag", 4);
+  params.mi=0;
+  params.ma=8;
 }
 
 
-export async function load(dataSource, containerid='contforvis', tagid='canvastag'){
+export async function load(dataSource, containerid='contforvis', tagid='canvastag', zoom=1){
   //console.log(typeof dataSource)
   gk = makeGaussKernel(params.radius);
   if(typeof dataSource=="string"){
@@ -103,7 +105,7 @@ export async function load(dataSource, containerid='contforvis', tagid='canvasta
       console.error(error.message);
     }
   } else if(typeof dataSource=="object"){
-    document.getElementById(containerid).innerHTML = '<canvas id="'+tagid+'" width="'+dataSource.width+'" height="'+dataSource.height+'"></canvas>';
+    document.getElementById(containerid).innerHTML = '<canvas id="'+tagid+'" width="'+dataSource.width*zoom+'" height="'+dataSource.height*zoom+'"></canvas>';
     createPipeline(dataSource,document.getElementById(tagid));
   }
 }
