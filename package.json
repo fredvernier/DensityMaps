@@ -4,10 +4,11 @@
   "private": true,
   "description": "displaying multi-class density maps using web gpu",
   "main": "server/server.js",
-  "browser" :"dist/densityMaps.js",
+  "browser": "dist/densityMaps.js",
   "scripts": {
     "start": "nodemon server/server.js",
     "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "jshint client",
     "build": "webpack --color --progress --config webpack.config.js",
     "build-lib": "webpack --color --progress --config webpack.config2.js"
   },
@@ -24,6 +25,10 @@
     "webpack": "^5.96.1",
     "webpack-cli": "^5.1.4",
     "webpack-dev-middleware": "^7.4.2",
-    "webpack-hot-middleware": "^2.26.1"
+    "webpack-hot-middleware": "^2.26.1",
+    "jshint": "^2.13.6"
+  },
+  "jshintConfig": {
+    "esversion": 8
   }
 }
