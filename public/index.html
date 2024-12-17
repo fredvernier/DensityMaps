@@ -12,8 +12,10 @@
   <script>
     async function switchVis(map, containerid){
       document.getElementById("msg").style.display = 'none';
-      let can = DensityMaps.load(map, containerid);
-      can.classList.add('w3-animate-top'); 
+      let dm = await DensityMaps.load(map, containerid);
+     // console.log(dm)
+      dm.canvas.classList.add('w3-animate-top'); 
+      dm.render();
     }
 
     async function init(containerid='contforvis'){
