@@ -54,13 +54,13 @@ function makeGaussKernel(sigma){
 }
 
 
-export function debug(){
+export async function debug(){
   gk = makeGaussKernel(params.radius);
   let kt = "** "
   for(let v of gk) 
     kt= kt+v+" ";
   console.log(kt);
-  load({
+  let dm = await load({
     width:8,
     height:8,
     data: new Uint16Array([
@@ -74,6 +74,7 @@ export function debug(){
       0, 0, 0, 8,10, 8, 0, 0
     ])
   }, "contid", "canvastag", 4);
+  dm.render();
   params.mi=1;
   params.ma=8;
 }
@@ -99,24 +100,29 @@ export async function load(dataSource, containerid='contforvis', tagid='canvasta
       const data = await response.arrayBuffer();
       img=decode(data);
       container.innerHTML = '<canvas id="'+tagid+'" width="'+img.width+'" height="'+img.height+'"></canvas>';
-      console.log(container.firstChild)
+      //console.log(container.firstChild)
+      
       return {
-        "render" : function() {},
+        "render" : function() {createPipeline(img,container.firstChild);},
         "canvas" : container.firstChild
       }
-      createPipeline(img,document.getElementById(tagid));
     } catch (error) {
       console.error("error.message");
       console.error(error.message);
     }
   } else if(typeof dataSource=="object"){
     container.innerHTML = '<canvas id="'+tagid+'" width="'+dataSource.width*zoom+'" height="'+dataSource.height*zoom+'"></canvas>';
-    createPipeline(dataSource,document.getElementById(tagid));
+    return {
+      "render" : function() {createPipeline(dataSource, container.firstChild);},
+      "canvas" : container.firstChild
+    }
+    
   }
 }
 
 
 async function createPipeline(img, ct){
+  console.log("createPipeline")
   canvastag = ct;
   var globCanvasrect = ct.getBoundingClientRect();
   canvastag.addEventListener("mousemove", function(e){
