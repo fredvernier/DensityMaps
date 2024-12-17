@@ -1,6 +1,6 @@
-const express = require('express')
-const app      = express()
-const port     = 8000
+const express = require('express');
+const app      = express();
+const port     = 8000;
 const fs       = require("fs");    // filesystem to read&write files
 const path     = require('path');
 const fastpng  = require('fast-png');
@@ -47,8 +47,8 @@ app.get('/p', (req, res) => {
   let imgdata = img.data;
   let min0 = imgdata[0], max0 = imgdata[0], sum=0;
   for(let i in imgdata){
-    min0 = Math.min(min0,imgdata[i] )
-    max0 = Math.max(max0,imgdata[i] )
+    min0 = Math.min(min0,imgdata[i]);
+    max0 = Math.max(max0,imgdata[i]);
     sum += imgdata[i];
   }
   //img.text = "258";
@@ -57,26 +57,26 @@ app.get('/p', (req, res) => {
   let img2=fastpng.encode(img);
   
   res.send(Buffer.from(img2.buffer));
-})
+});
 
 
 app.get('/datalist', (req, res) => {
   let ll =
   fs.readdirSync(path.join(__dirname, '../data'), {withFileTypes: true})
-    .filter(item => !item.isDirectory()&&item.isFile()&&item.name.endsWith(".png"))
-    .map(item => item.name)
+      .filter(item => !item.isDirectory()&&item.isFile()&&item.name.endsWith(".png"))
+      .map(item => item.name);
   res.json(ll);
-})
+});
 
 
 app.get('/', (req, res) => {
   //console.log("/")
-  res.sendFile(path.join(__dirname, '../public', 'index.html'))
-})
+  res.sendFile(path.join(__dirname, '../public', 'index.html'));
+});
 
 app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`)
-})
+  console.log(`Example app listening on port ${port}`);
+});
 
 app.use('/css',express.static(path.join(__dirname, '../public/css')));
 app.use('/imgs',express.static(path.join(__dirname, '../public/imgs'))); 
