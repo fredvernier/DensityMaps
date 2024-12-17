@@ -74,13 +74,14 @@ export function debug(){
       0, 0, 0, 8,10, 8, 0, 0
     ])
   }, "contid", "canvastag", 4);
-  params.mi=0;
+  params.mi=1;
   params.ma=8;
 }
 
 
 export async function load(dataSource, containerid='contforvis', tagid='canvastag', zoom=1){
-  //console.log(typeof dataSource)
+  console.log(containerid)
+  let container = document.getElementById(containerid);
   gk = makeGaussKernel(params.radius);
   if(typeof dataSource=="string"){
     try {
@@ -97,15 +98,19 @@ export async function load(dataSource, containerid='contforvis', tagid='canvasta
 
       const data = await response.arrayBuffer();
       img=decode(data);
-      document.getElementById(containerid).innerHTML = '<canvas id="'+tagid+'" width="'+img.width+'" height="'+img.height+'"></canvas>';
-
+      container.innerHTML = '<canvas id="'+tagid+'" width="'+img.width+'" height="'+img.height+'"></canvas>';
+      console.log(container.firstChild)
+      return {
+        "render" : function() {},
+        "canvas" : container.firstChild
+      }
       createPipeline(img,document.getElementById(tagid));
     } catch (error) {
       console.error("error.message");
       console.error(error.message);
     }
   } else if(typeof dataSource=="object"){
-    document.getElementById(containerid).innerHTML = '<canvas id="'+tagid+'" width="'+dataSource.width*zoom+'" height="'+dataSource.height*zoom+'"></canvas>';
+    container.innerHTML = '<canvas id="'+tagid+'" width="'+dataSource.width*zoom+'" height="'+dataSource.height*zoom+'"></canvas>';
     createPipeline(dataSource,document.getElementById(tagid));
   }
 }
@@ -113,6 +118,12 @@ export async function load(dataSource, containerid='contforvis', tagid='canvasta
 
 async function createPipeline(img, ct){
   canvastag = ct;
+  var globCanvasrect = ct.getBoundingClientRect();
+  canvastag.addEventListener("mousemove", function(e){
+    console.log(e);
+    console.log((e.clientX-globCanvasrect.left)+","+(e.clientY-globCanvasrect.top));
+  })
+
   if (!img) return
   //console.log("createPipeline NEW")
   //console.log(img)
@@ -242,7 +253,7 @@ async function createPipeline(img, ct){
         let state = f32(cellState[input.instance]); // New line!            
 
         let cellOffset = cell / grid * 2;
-        let gridPos = (input.pos + 1) / grid - 1 + cellOffset;
+        let gridPos = (input.pos - vec2(-1,1)) / grid - 1 + cellOffset;
         
         var output: VertexOutput;
         output.pos = vec4f(gridPos, 0, 1);
@@ -259,11 +270,11 @@ async function createPipeline(img, ct){
       @fragment
       fn fragmentMain(input: FragInput) -> @location(0) vec4f {
         let bb1 = 1-max(input.cell.x/grid.x, input.cell.y/grid.y);
-        let bb2 = sqrt(max(0,f32(input.val)-globAdjust[0]))/(globAdjust[1]-globAdjust[0]); 
+        let bb2 = sqrt(max(0.0,f32(input.val)-globAdjust[0]))/(globAdjust[1]-globAdjust[0]); 
         if (f32(input.val)<globAdjust[0]){
           return vec4f(0.0, 0.0, 0.0, 0.0);
         } else {
-          return vec4f(bb2, bb2, bb2, 1);//input.cell/grid
+          return vec4f(bb2, bb2, bb2, 1.0);//input.cell/grid
         }
       }
 
@@ -388,29 +399,8 @@ async function createPipeline(img, ct){
           sum += blur[u32(i32(r)-i)]*f32(cellActive(u32(i32(cell.x)+i), cell.y+0));
           ws  += blur[u32(i32(r)-i)];
         }
-        let sum2 =  1*cellActive(cell.x+1, cell.y+1) +
-                    2*cellActive(cell.x+1, cell.y) +
-                    1*cellActive(cell.x+1, cell.y-1) +
-                    1*cellActive(cell.x-1, cell.y-1) +
-                    2*cellActive(cell.x-1, cell.y) +
-                    1*cellActive(cell.x-1, cell.y+1) +
-                    2*cellActive(cell.x,   cell.y-1) +
-                    4*cellActive(cell.x,   cell.y) +
-                    2*cellActive(cell.x,   cell.y+1);
-        let i = cellIndex(cell.xy);
 
-        // Conway's game of life rules:
-        /*switch sum {
-          case 2: { // Active cells with 2 neighbors stay active.
-            cellStateOut[i] = cellStateIn[i];
-          }
-          case 3: { // Cells with 3 neighbors become or stay active.
-            cellStateOut[i] = 1;
-          }
-          default: { // Cells with < 2 or > 3 neighbors become inactive.
-            cellStateOut[i] = 0;
-          }
-        }*/
+        let i = cellIndex(cell.xy);
         cellStateOut[i] = u32(sum/ws);
       }
       `

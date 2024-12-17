@@ -10,6 +10,12 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Sofia&amp;effect=fire">
   <script type="module" src="js/client.js"></script>
   <script>
+    async function switchVis(map, containerid){
+      document.getElementById("msg").style.display = 'none';
+      let can = DensityMaps.load(map, containerid);
+      can.classList.add('w3-animate-top'); 
+    }
+
     async function init(containerid='contforvis'){
       try {
         const response = await fetch("/datalist");
@@ -18,7 +24,7 @@
 
         const data = await response.json();
         for(let d of data)
-          document.getElementById('datamenu').innerHTML += '<button class="w3-bar-item w3-button w3-mobile" onclick="DensityMaps.load(\''+d+'\', \''+containerid+'\')">'+d+'</button>';
+          document.getElementById('datamenu').innerHTML += '<button class="w3-bar-item w3-button w3-mobile" onclick="switchVis(\''+d+'\', \''+containerid+'\')">'+d+'</button>';
       } catch (error) {
         console.error(error.message);
       }
@@ -39,14 +45,17 @@
 </head>
 
 <body onload = init()>
-  
   <div id="contforvis" class="w3-container w3-display-middle w3-center"> 
+   
+  </div>
+  
+  <div id="msg" class="w3-container w3-display-middle w3-center"> 
     <h1 class="w3-sofia font-effect-fire">Density Maps <br>Loading &amp; Visualization </h1>
   </div>
   <div class="w3-top">
     <div class="w3-bar w3-blue"> 
       <div class="w3-bar-item">
-        <a  href="#" onclick="DensityMaps.debug()">Density Maps</a>
+        <a  href="#" onclick="DensityMaps.debug('contid')">Density Maps</a>
       </div>
 
       <div class="w3-dropdown-hover">

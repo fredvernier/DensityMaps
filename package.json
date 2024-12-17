@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "private": true,
   "description": "displaying multiple densoty maps using web gpu",
-  "main": "server.js",
+  "main": "server/server.js",
+  "browser" :"dist/densityMaps.js",
   "scripts": {
     "start": "nodemon server/server.js",
     "test": "echo \"Error: no test specified\" && exit 1",
