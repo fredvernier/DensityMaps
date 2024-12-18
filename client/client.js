@@ -2,8 +2,8 @@
 //import  $  from "jquery";
 import { decode } from "fast-png";
 
-export function load(dataSource, containerid='contforvis', tagid='canvastag', zoom=1){
-   return DensityMaps.load(dataSource, containerid, tagid, zoom);
+export function load(dataSource, containerid='contforvis', zoom=1, tagid=null){
+   return DensityMaps.load(dataSource, containerid, zoom, tagid);
 }
 
 export class DensityMaps {
@@ -84,14 +84,14 @@ export class DensityMaps {
         0, 0, 0, 8,10, 8, 0, 0,
         0, 0, 0, 8,10, 8, 0, 0
       ])
-    }, "contid", "canvastag", 4);
+    }, "contid", 4);
     dm.render();
     this.params.mi=1;
     this.params.ma=8;
   }
 
 
-  static async load(dataSource, containerid='contforvis', tagid='canvastag', zoom=1){
+  static async load(dataSource, containerid='contforvis', zoom=1, tagid=null){
    // console.log("load ")
     //console.log(containerid)
     //console.log(dataSource.width+"*"+zoom)
@@ -117,7 +117,8 @@ export class DensityMaps {
       newobj.#img = dataSource;
     }
 
-    container.innerHTML = '<canvas id="'+tagid+'" width="'+(dataSource.width*zoom)+'" height="'+(dataSource.height*zoom)+'"></canvas>';
+    let id = tagid==null ? "" : `id="${tagid}"`;
+    container.innerHTML = '<canvas '+id+' width="'+(dataSource.width*zoom)+'" height="'+(dataSource.height*zoom)+'"></canvas>';
     newobj.canvas=container.firstChild;
     newobj.#adapter = await navigator.gpu.requestAdapter();
     if (!newobj.#adapter) {
@@ -132,10 +133,10 @@ export class DensityMaps {
 
   init() {
     //console.log("init ")
-    var globCanvasrect = this.canvas.getBoundingClientRect();
-    this.canvas.addEventListener("mousemove", function(e){
-      console.log((e.clientX-globCanvasrect.left)+","+(e.clientY-globCanvasrect.top));
-    });
+    // var globCanvasrect = this.canvas.getBoundingClientRect();
+    // this.canvas.addEventListener("mousemove", function(e){
+    //   console.log((e.clientX-globCanvasrect.left)+","+(e.clientY-globCanvasrect.top));
+    // });
 
     if (!this.#img) return;
     this.#GRID_SIZE_X = this.#img.width;
@@ -486,7 +487,7 @@ export class DensityMaps {
       colorAttachments: [{
         view: this.#context.getCurrentTexture().createView(),
         loadOp: "clear",
-        clearValue: { r: .2, g: 0.1, b: 0.4, a: 1 }, // New line
+        clearValue: { r: 0.2, g: 0.1, b: 0.4, a: 1 }, // New line
         storeOp: "store",
       }],
     });
