@@ -13,7 +13,7 @@
     async function switchVis(map, containerid){
       document.getElementById("msg").style.display = 'none';
       let dm = await DensityMaps.load(map, containerid);
-     // console.log(dm)
+      console.log(dm)
       dm.canvas.classList.add('w3-animate-top'); 
       dm.render();
     }

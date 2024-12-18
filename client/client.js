@@ -54,13 +54,13 @@ function makeGaussKernel(sigma){
 }
 
 
-export async function debug(){
+export function debug(){
   gk = makeGaussKernel(params.radius);
   let kt = "** "
   for(let v of gk) 
     kt= kt+v+" ";
   console.log(kt);
-  let dm = await load({
+  load({
     width:8,
     height:8,
     data: new Uint16Array([
@@ -74,7 +74,6 @@ export async function debug(){
       0, 0, 0, 8,10, 8, 0, 0
     ])
   }, "contid", "canvastag", 4);
-  dm.render();
   params.mi=1;
   params.ma=8;
 }
