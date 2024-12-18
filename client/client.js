@@ -114,6 +114,10 @@ export class DensityMaps {
         newobj.#img=decode(data);
         dataSource = newobj.#img;
     } else if(typeof dataSource=="object"){
+      if (dataSource.data.length != dataSource.width * dataSource.height)
+        throw new Error(
+          `Inconsistent data source length ${dataSource.data.length} != ${dataSource.width * dataSource.height}`
+        );
       newobj.#img = dataSource;
     }
 
@@ -205,7 +209,7 @@ export class DensityMaps {
     this.#device.queue.writeBuffer(this.#uniformAdjustBuffer, 0, uniformAdjustArray);
 
     // Create an array representing the active state of each cell.
-    this.#cellStateArray = new Uint32Array(this.#GRID_SIZE_X * this.#GRID_SIZE_Y);
+    this.#cellStateArray = Uint32Array.from(this.#img.data); // copy and truncate
     // Create a storage buffer to hold the cell state.
     this.#cellStateStorage = [
       this.#device.createBuffer({
@@ -219,9 +223,6 @@ export class DensityMaps {
         usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST,
       })
     ];
-    for (let i = 0; i < this.#cellStateArray.length; ++i) {
-      this.#cellStateArray[i] = Math.round(this.#img.data[i]);
-    }
     this.#device.queue.writeBuffer(this.#cellStateStorage[0], 0, this.#cellStateArray);
     this.#device.queue.writeBuffer(this.#cellStateStorage[1], 0, this.#cellStateArray);
 
@@ -574,8 +575,7 @@ export class DensityMaps {
 
 
   reset (){
-    for (let i = 0; i < this.#cellStateArray.length; ++i) 
-      this.#cellStateArray[i] = Math.round(this.#img.data[i]);
+    this.#cellStateArray = Uint32Array.from(this.#img.data); // copy and truncate
     this.#device.queue.writeBuffer(this.#cellStateStorage[0], 0, this.#cellStateArray);
     this.#device.queue.writeBuffer(this.#cellStateStorage[1], 0, this.#cellStateArray);
     this.render();
