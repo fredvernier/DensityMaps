@@ -10,12 +10,15 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Sofia&amp;effect=fire">
   <script type="module" src="js/client.js"></script>
   <script>
+    let datamap;
+
     async function switchVis(map, containerid){
       document.getElementById("msg").style.display = 'none';
-      let dm = await DensityMaps.load(map, containerid);
-      console.log(dm)
-      dm.canvas.classList.add('w3-animate-top'); 
-      dm.render();
+      datamap = await DensityMaps.load(map, containerid);
+      updateUI();
+      //console.log(datamap)
+      datamap.canvas.classList.add('w3-animate-top'); 
+      datamap.render();
     }
 
     async function init(containerid='contforvis'){
@@ -30,17 +33,17 @@
       } catch (error) {
         console.error(error.message);
       }
-      updateUI();
+      //updateUI();
     }
 
     function updateUI() {
-      DensityMaps.params.mi = parseFloat(document.getElementById('mi').value);
-      DensityMaps.params.ma = parseFloat(document.getElementById('ma').value);
-      //console.log(DensityMaps.params.mi+"..."+DensityMaps.params.ma)
+      datamap.params.mi = parseFloat(document.getElementById('mi').value);
+      datamap.params.ma = parseFloat(document.getElementById('ma').value);
+      //console.log(datamap.params.mi+"..."+datamap.params.ma)
 
-      DensityMaps.params.blurtype = document.querySelector( 'input[name="blurtype"]:checked').value;
-      DensityMaps.params.radius = parseFloat(document.getElementById('rblur').value);  
-      DensityMaps.params.colorscale = document.querySelector( 'input[name="colorscale"]:checked').value;
+      datamap.params.blurtype = document.querySelector( 'input[name="blurtype"]:checked').value;
+      datamap.params.radius = parseFloat(document.getElementById('rblur').value);  
+      datamap.params.colorscale = document.querySelector( 'input[name="colorscale"]:checked').value;
     }
 
   </script>
@@ -63,18 +66,18 @@
       <div class="w3-dropdown-hover">
         <button class="w3-button">Data</button>
         <div id="datamenu" class="w3-dropdown-content w3-bar-block ">
-          <button class="w3-button" onclick="DensityMaps.reset()">Reset</button>
+          <button class="w3-button" onclick="datamap.reset()">Reset</button>
         </div>
       </div>
 
     <div class="w3-dropdown-hover">
       <button class="w3-button">Blur</button>
       <div class="w3-dropdown-content w3-bar-block ">
-        <div class="w3-bar-item"><input class="w3-radio" type="radio" name="blurtype" onchange="updateUI();DensityMaps.applyBlur()" value="" checked ><label> No</label></div>
-        <div class="w3-bar-item"><input class="w3-radio" type="radio" name="blurtype" onchange="updateUI();DensityMaps.applyBlur()" value="h"><label> Horizontal</label></div>
-        <div class="w3-bar-item"><input class="w3-radio" type="radio" name="blurtype" onchange="updateUI();DensityMaps.applyBlur()" value="v"><label> Vertical</label></div>
-        <div class="w3-bar-item"><input class="w3-radio" type="radio" name="blurtype" onchange="updateUI();DensityMaps.applyBlur()" value="both"><label> Both</label></div>
-        <div class="w3-bar-item"><input onchange="updateUI();DensityMaps.applyBlur()"  oninput="updateUI();DensityMaps.applyBlur()" type="range" id="rblur" name="rblur" min="0" max="48" value="8"></div>
+        <div class="w3-bar-item"><input class="w3-radio" type="radio" name="blurtype" onchange="updateUI();datamap.applyBlur()" value="" checked ><label> No</label></div>
+        <div class="w3-bar-item"><input class="w3-radio" type="radio" name="blurtype" onchange="updateUI();datamap.applyBlur()" value="h"><label> Horizontal</label></div>
+        <div class="w3-bar-item"><input class="w3-radio" type="radio" name="blurtype" onchange="updateUI();datamap.applyBlur()" value="v"><label> Vertical</label></div>
+        <div class="w3-bar-item"><input class="w3-radio" type="radio" name="blurtype" onchange="updateUI();datamap.applyBlur()" value="both"><label> Both</label></div>
+        <div class="w3-bar-item"><input onchange="updateUI();datamap.applyBlur()"  oninput="updateUI();datamap.applyBlur()" type="range" id="rblur" name="rblur" min="0" max="48" value="8"></div>
       </div>
     </div>
 
@@ -82,10 +85,10 @@
     <div class="w3-dropdown-hover">
       <button class="w3-button">Render</button>
       <div class="w3-dropdown-content w3-bar-block w3-card-4">
-        <div class="w3-bar-item"><input class="w3-input" onchange="updateUI();DensityMaps.render()" oninput="updateUI();DensityMaps.render()" type="range" id="mi" name="mi" min="0" max="10000" value="1000"></div>
-        <div class="w3-bar-item"><input class="w3-input" onchange="updateUI();DensityMaps.render()" oninput="updateUI();DensityMaps.render()" type="range" id="ma" name="ma" min="0" max="1000" value="400"></div>
-        <div class="w3-bar-item"><input class="w3-radio" type="radio" name="colorscale" onchange="updateUI();DensityMaps.applyColorScale()" value="imgs/BTC.png" checked > <img height="24" src="imgs/BTC.png"/></div>
-        <div class="w3-bar-item"><input class="w3-radio" type="radio" name="colorscale" onchange="updateUI();DensityMaps.applyColorScale()" value="imgs/BTY.png"> <img height="24" src="imgs/BTY.png"/></div>
+        <div class="w3-bar-item"><input class="w3-input" onchange="updateUI();datamap.render()" oninput="updateUI();datamap.render()" type="range" id="mi" name="mi" min="0" max="10000" value="1000"></div>
+        <div class="w3-bar-item"><input class="w3-input" onchange="updateUI();datamap.render()" oninput="updateUI();datamap.render()" type="range" id="ma" name="ma" min="0" max="1000" value="400"></div>
+        <div class="w3-bar-item"><input class="w3-radio" type="radio" name="colorscale" onchange="updateUI();datamap.applyColorScale()" value="imgs/BTC.png" checked > <img height="24" src="imgs/BTC.png"/></div>
+        <div class="w3-bar-item"><input class="w3-radio" type="radio" name="colorscale" onchange="updateUI();datamap.applyColorScale()" value="imgs/BTY.png"> <img height="24" src="imgs/BTY.png"/></div>
       </div>
     </div>
 

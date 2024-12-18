@@ -1,1 +1,59 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>test of density Maps #1</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <script src="../dist/DensityMaps.js"></script>
+  <script>
+    async function init(){
+      let datamap0 = await DensityMaps.load({
+        width: 8,
+        height:10,
+        data: new Uint16Array([
+          0, 0, 0, 0, 0, 0, 0, 0,
+          0, 0,16,16,16, 0, 0, 0,
+          0, 0,16,13,13,16, 0, 0,
+          0, 0,16,11, 9,16, 0, 0,
+          0, 0,16,11, 6,13,16, 0,
+          0, 0,16,11, 6,13,16, 0,
+          0, 0,16,11, 9,16, 8, 0,
+          0, 0,16,13,13,16, 0, 0,
+          0, 0,16,16,16, 8, 0, 0,
+          0, 0, 0, 0, 0, 0, 0, 0
+        ])
+      }, 'container0', 'canvastag0', 4);
+      datamap0.render();
+
+      let datamap1 = await DensityMaps.load({
+        width: 8,
+        height:10,
+        data: new Uint16Array([
+          0, 0, 0, 0, 0, 0, 0, 0,
+          0,16, 0, 0, 0, 0,16, 0,
+          0,16,16, 0, 0,16,16, 0,
+          0,16,13,16,16,13,16, 0,
+          0,16,12,11,11,12,16, 0,
+          0,16,11, 6, 6,11,16, 0,
+          0,16,11, 4, 4,11,16, 0,
+          0,16,13, 2, 2,11,16, 0,
+          0,16,16, 1, 1,11,16, 0,
+          0, 0, 0, 0, 0, 0, 0, 0
+        ])
+      }, 'container1', 'canvastag1', 4);
+      datamap1.render();
+    }
+  </script>
+</head>
+
+
+<body onload="init()">
+  <h1>Tests </h1>
+  <span id="container0"></span>ensity  <span id="container1"></span>aps
+
+  
+</body>
+
+</html>
