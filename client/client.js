@@ -7,13 +7,13 @@ export function load(dataSource, containerid='contforvis', tagid='canvastag', zo
 }
 
 export class DensityMaps {
-  #hBlurPipeline
+  #hBlurPipeline;
   #vBlurPipeline;
   #device = null;
   #adapter = null;
   #bindGroups = null;
   #step = 0; // Track how many 
-  #GRID_SIZE_X
+  #GRID_SIZE_X;
   #GRID_SIZE_Y;
   #WORKGROUP_SIZE = 8;
   #context;
@@ -36,7 +36,7 @@ export class DensityMaps {
     radius : 4, 
     blurtype : '', 
     colorscale : ''
-  }
+  };
 
   constructor() {
     this.#gk = DensityMaps.makeGaussKernel(this.params.radius);
@@ -58,7 +58,7 @@ export class DensityMaps {
       kernel[j] = Math.exp(-(i*i)/(s2)) / sqrtSigmaPi2;
       sum += kernel[j];
     }
-    for (var i = 0; i < dim; i++) {
+    for (i = 0; i < dim; i++) {
       kernel[i] /= sum;
     }
     return kernel;
@@ -66,8 +66,8 @@ export class DensityMaps {
 
 
   async debug(){
-    gk = makeGaussKernel(params.radius);
-    let kt = "** "
+    let gk = DensityMaps.makeGaussKernel(DensityMaps.params.radius);
+    let kt = "** ";
     for(let v of gk) 
       kt= kt+v+" ";
     console.log(kt);
@@ -112,7 +112,7 @@ export class DensityMaps {
 
         const data = await response.arrayBuffer();
         newobj.#img=decode(data);
-        dataSource = newobj.#img
+        dataSource = newobj.#img;
     } else if(typeof dataSource=="object"){
       newobj.#img = dataSource;
     }
@@ -130,14 +130,14 @@ export class DensityMaps {
   }
 
 
-  init(){
+  init() {
     //console.log("init ")
     var globCanvasrect = this.canvas.getBoundingClientRect();
     this.canvas.addEventListener("mousemove", function(e){
       console.log((e.clientX-globCanvasrect.left)+","+(e.clientY-globCanvasrect.top));
-    })
+    });
 
-    if (!this.#img) return
+    if (!this.#img) return;
     this.#GRID_SIZE_X = this.#img.width;
     this.#GRID_SIZE_Y = this.#img.height;
     
@@ -490,6 +490,7 @@ export class DensityMaps {
         storeOp: "store",
       }],
     });
+    pass; //TODO: remove! avoids an eslint warning for now
     //this.render();
   }
 
@@ -516,7 +517,7 @@ export class DensityMaps {
     if(!this.#device) return;
     //console.log("  updateData "+  this.#step )
 
-    let t = performance.now();
+    //let t = performance.now();
     // Move the encoder creation to the top of the function.
     const encoder = this.#device.createCommandEncoder();
     for (let pipeline of this.#pipelines){
@@ -544,7 +545,7 @@ export class DensityMaps {
     const uniformAdjustArray = new Float32Array([this.params.mi, this.params.mi+this.params.ma, 0.0001]);
     this.#device.queue.writeBuffer(this.#uniformAdjustBuffer, 0, uniformAdjustArray);
 
-    let t = performance.now();
+    //let t = performance.now();
     const encoder = this.#device.createCommandEncoder();
 
     // Start a render pass 
@@ -572,10 +573,10 @@ export class DensityMaps {
 
 
   reset (){
-    for (let i = 0; i < cellStateArray.length; ++i) 
-      cellStateArray[i] = Math.round(img.data[i]);
-    device.queue.writeBuffer(cellStateStorage[0], 0, cellStateArray);
-    device.queue.writeBuffer(cellStateStorage[1], 0, cellStateArray);
-    render();
+    for (let i = 0; i < this.#cellStateArray.length; ++i) 
+      this.#cellStateArray[i] = Math.round(this.#img.data[i]);
+    this.#device.queue.writeBuffer(this.#cellStateStorage[0], 0, this.#cellStateArray);
+    this.#device.queue.writeBuffer(this.#cellStateStorage[1], 0, this.#cellStateArray);
+    this.render();
   }
 }
