@@ -8,10 +8,10 @@ module.exports = {
   },// "./client/client.js",//path relative to this file
   plugins: [
     new webpack.HotModuleReplacementPlugin(),
-    new webpack.ProvidePlugin({
-      $: "jquery",
-      jQuery: "jquery"
-    })
+    // new webpack.ProvidePlugin({
+    //   $: "jquery",
+    //   jQuery: "jquery"
+    // })
   ],
   output: {
     library: {

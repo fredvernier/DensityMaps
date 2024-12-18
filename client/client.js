@@ -28,7 +28,7 @@ export let params = {
   radius : 16, 
   blurtype : '', 
   colorscale : ''
-}
+};
 let canvastag;
 
 function makeGaussKernel(sigma){
@@ -47,7 +47,7 @@ function makeGaussKernel(sigma){
     kernel[j] = Math.exp(-(i*i)/(s2)) / sqrtSigmaPi2;
     sum += kernel[j];
   }
-  for (var i = 0; i < dim; i++) {
+  for (i = 0; i < dim; i++) {
     kernel[i] /= sum;
   }
   return kernel;
@@ -56,7 +56,7 @@ function makeGaussKernel(sigma){
 
 export function debug(){
   gk = makeGaussKernel(params.radius);
-  let kt = "** "
+  let kt = "** ";
   for(let v of gk) 
     kt= kt+v+" ";
   console.log(kt);
@@ -80,7 +80,7 @@ export function debug(){
 
 
 export async function load(dataSource, containerid='contforvis', tagid='canvastag', zoom=1){
-  console.log(containerid)
+  console.log(containerid);
   let container = document.getElementById(containerid);
   gk = makeGaussKernel(params.radius);
   if(typeof dataSource=="string"){
@@ -104,7 +104,7 @@ export async function load(dataSource, containerid='contforvis', tagid='canvasta
       return {
         "render" : function() {createPipeline(img,container.firstChild);},
         "canvas" : container.firstChild
-      }
+      };
     } catch (error) {
       console.error("error.message");
       console.error(error.message);
@@ -114,22 +114,21 @@ export async function load(dataSource, containerid='contforvis', tagid='canvasta
     return {
       "render" : function() {createPipeline(dataSource, container.firstChild);},
       "canvas" : container.firstChild
-    }
-    
+    };
   }
 }
 
 
 async function createPipeline(img, ct){
-  console.log("createPipeline")
+  console.log("createPipeline");
   canvastag = ct;
   var globCanvasrect = ct.getBoundingClientRect();
   canvastag.addEventListener("mousemove", function(e){
     console.log(e);
     console.log((e.clientX-globCanvasrect.left)+","+(e.clientY-globCanvasrect.top));
-  })
+  });
 
-  if (!img) return
+  if (!img) return;
   //console.log("createPipeline NEW")
   //console.log(img)
   GRID_SIZE_X = img.width;
@@ -492,7 +491,7 @@ async function createPipeline(img, ct){
     colorAttachments: [{
       view: context.getCurrentTexture().createView(),
       loadOp: "clear",
-      clearValue: { r: .2, g: 0.1, b: 0.4, a: 1 }, // New line
+      clearValue: { r: 0.2, g: 0.1, b: 0.4, a: 1 }, // New line
       storeOp: "store",
     }],
   });
