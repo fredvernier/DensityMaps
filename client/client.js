@@ -95,7 +95,9 @@ export class DensityMaps {
    // console.log("load ")
     //console.log(containerid)
     //console.log(dataSource.width+"*"+zoom)
-    let container = document.getElementById(containerid);
+    let container = containerid;
+    if (typeof container=="string")
+      container = document.getElementById(containerid);
     let newobj =new DensityMaps();
     if(typeof dataSource=="string"){
       //try {
@@ -122,7 +124,9 @@ export class DensityMaps {
     }
 
     let id = tagid==null ? "" : `id="${tagid}"`;
-    container.innerHTML = '<canvas '+id+' width="'+(dataSource.width*zoom)+'" height="'+(dataSource.height*zoom)+'"></canvas>';
+    container.innerHTML = `<canvas ${id} \
+width="${Math.trunc(dataSource.width*zoom)}" \
+height="${Math.trunc(dataSource.height*zoom)}"></canvas>`;
     newobj.canvas=container.firstChild;
     newobj.#adapter = await navigator.gpu.requestAdapter();
     if (!newobj.#adapter) {
@@ -134,6 +138,25 @@ export class DensityMaps {
     return newobj;
   }
 
+  setDataSource(dataSource) {
+    if (typeof dataSource!="object")
+      throw new Error(`Invalid data source ${dataSource}`);
+
+    if (dataSource.data.length != dataSource.width * dataSource.height)
+      throw new Error(
+          `Inconsistent data source length \
+${dataSource.data.length} != ${dataSource.width * dataSource.height}`
+      );
+    if (dataSource.data.length != this.#img.data.length)
+      throw new Error(
+          `Invalid data source size \
+(${dataSource.data.width}, ${dataSource.data.height}) != \
+(${this.#img.data.width},${this.#img.data.height})`
+      );
+    
+    this.#img = dataSource;
+    this.reset();
+  }
 
   init() {
     //console.log("init ")
@@ -571,8 +594,6 @@ export class DensityMaps {
     this.#device.queue.submit([encoder.finish()]);
     //console.log("render: "+(performance.now()-t));
   }
-
-
 
   reset (){
     this.#cellStateArray = Uint32Array.from(this.#img.data); // copy and truncate
