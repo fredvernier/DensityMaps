@@ -10,7 +10,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint client",
     "build": "webpack --color --progress --config webpack.config.js",
-    "build-lib": "webpack --color --progress --config webpack.config2.js"
+    "build-lib": "webpack --color --progress --config webpack.config2.js",
+    "build-libdev": "webpack --color --progress --config webpack.dev.js"
   },
   "author": "fred vernier",
   "license": "ISC",

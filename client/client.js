@@ -2,7 +2,7 @@
 //import  $  from "jquery";
 import { decode } from "fast-png";
 
-export function load(dataSource, containerid='contforvis', zoom=1, tagid=null){
+export async function load(dataSource, containerid='contforvis', zoom=1, tagid=null){
    return DensityMaps.load(dataSource, containerid, zoom, tagid);
 }
 
