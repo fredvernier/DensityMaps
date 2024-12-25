@@ -4,10 +4,10 @@ const port     = 8000;
 const fs       = require("fs");    // filesystem to read&write files
 const path     = require('path');
 const fastpng  = require('fast-png');
-const sessions = require('express-session'); // to handle sessions (user remain connected over time)
-const ejs      = require('ejs');   // ejs is pur view engine
-const http     = require('http');
-const https    = require('https');
+//const sessions = require('express-session'); // to handle sessions (user remain connected over time)
+//const ejs      = require('ejs');   // ejs is pur view engine
+//const http     = require('http');
+//const https    = require('https');
 
 const webpack = require('webpack');
 const middleware = require('webpack-dev-middleware'); //webpack hot reloading middleware
@@ -51,7 +51,7 @@ app.get('/p', (req, res) => {
     max0 = Math.max(max0,imgdata[i]);
     sum += imgdata[i];
   }
-  //img.text = "258";
+  img.text = sum;
   //console.log("res= "+min0+" ... "+max0+" => "+sum)
   res.set('content-type', "image/png");
   let img2=fastpng.encode(img);

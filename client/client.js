@@ -1,8 +1,6 @@
-//import _ from 'lodash';
+/* jshint esversion: 6 */
 import { decode } from "fast-png";
-//import  $  from "jquery";
 
-const UPDATE_INTERVAL = 40; // Update every 200ms (5 times/sec)
 let hBlurPipeline, vBlurPipeline;
 let device = null;
 let adapter = null;
@@ -484,17 +482,6 @@ async function createPipeline(img, ct){
       entryPoint: "computeMain",
     }
   });
-
-  const encoder = device.createCommandEncoder();
-
-  const pass = encoder.beginRenderPass({
-    colorAttachments: [{
-      view: context.getCurrentTexture().createView(),
-      loadOp: "clear",
-      clearValue: { r: 0.2, g: 0.1, b: 0.4, a: 1 }, // New line
-      storeOp: "store",
-    }],
-  });
   render();
 }
 
@@ -521,7 +508,7 @@ export async function applyBlur(){
   if(!device) return;
   //console.log("  updateData "+  step )
 
-  let t = performance.now();
+  //let t = performance.now();
   // Move the encoder creation to the top of the function.
   const encoder = device.createCommandEncoder();
   for (let pipeline of pipelines){
@@ -549,7 +536,7 @@ export function render() {
   const uniformAdjustArray = new Float32Array([params.mi, params.mi+params.ma, 0.0001]);
   device.queue.writeBuffer(uniformAdjustBuffer, 0, uniformAdjustArray);
 
-  let t = performance.now();
+  //let t = performance.now();
   const encoder = device.createCommandEncoder();
 
   // Start a render pass 
