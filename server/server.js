@@ -80,4 +80,6 @@ app.listen(port, () => {
 
 app.use('/css',express.static(path.join(__dirname, '../public/css')));
 app.use('/imgs',express.static(path.join(__dirname, '../public/imgs'))); 
+app.use('/dist/DensityMaps.js',express.static(path.join(__dirname, '../dist/DensityMaps.js'))); 
+app.use('/example.html',express.static(path.join(__dirname, '../public/example.html'))); 
 //app.use('/js',express.static(__dirname+'/public/js'));
