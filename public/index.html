@@ -28,7 +28,7 @@
 
         const data = await response.json();
         for(let d of data)
-          document.getElementById('datamenu').innerHTML += '<button class="w3-bar-item w3-button w3-mobile" onclick="switchVis(\''+d+'\', \''+containerid+'\')">'+d+'</button>';
+          document.getElementById('datamenu').innerHTML += '<button class="w3-bar-item w3-button w3-mobile" onclick="switchVis(\'server://'+d+'\', \''+containerid+'\')">'+d+'</button>';
       } catch (error) {
         console.error(error.message);
       }
@@ -36,6 +36,7 @@
     }
 
     function updateUI() {
+      if (!datamap) return;
       datamap.params.mi = parseFloat(document.getElementById('mi').value);
       datamap.params.ma = parseFloat(document.getElementById('ma').value);
       //console.log(datamap.params.mi+"..."+datamap.params.ma)
@@ -83,15 +84,31 @@
 
     <div class="w3-dropdown-hover">
       <button class="w3-button">Render</button>
-      <div class="w3-dropdown-content w3-bar-block w3-card-4">
+      <div id="colorramps" class="w3-dropdown-content w3-bar-block w3-card-4">
         <div class="w3-bar-item"><input class="w3-input" onchange="updateUI();datamap.render()" oninput="updateUI();datamap.render()" type="range" id="mi" name="mi" min="0" max="10000" value="1000"></div>
-        <div class="w3-bar-item"><input class="w3-input" onchange="updateUI();datamap.render()" oninput="updateUI();datamap.render()" type="range" id="ma" name="ma" min="0" max="1000" value="400"></div>
-        <div class="w3-bar-item"><input class="w3-radio" type="radio" name="colorscale" onchange="updateUI();datamap.applyColorScale()" value="imgs/BTC.png" checked > <img height="24" src="imgs/BTC.png"/></div>
-        <div class="w3-bar-item"><input class="w3-radio" type="radio" name="colorscale" onchange="updateUI();datamap.applyColorScale()" value="imgs/BTY.png"> <img height="24" src="imgs/BTY.png"/></div>
+        <div class="w3-bar-item"><input class="w3-input" onchange="updateUI();datamap.render()" oninput="updateUI();datamap.render()" type="range" id="ma" name="ma" min="0" max="100000" value="400"></div>
+        <div class="w3-bar-item"><input class="w3-radio" type="radio" name="colorscale" onchange="updateUI();datamap.applyColorScale(this.value)" value="imgs/BTC.png">          <img height="12" width="243" src="imgs/BTC.png"/></div>
+        <div class="w3-bar-item"><input class="w3-radio" type="radio" name="colorscale" onchange="updateUI();datamap.applyColorScale(this.value)" value="imgs/BTY.png">          <img height="12" width="243" src="imgs/BTY.png"/></div>
+
+        <div class="w3-bar-item"><input class="w3-radio" type="radio" name="colorscale" onchange="updateUI();datamap.applyColorScale(this.value)" value="imgs/HEATED.png">       <img height="12" width="243" src="imgs/HEATED.png"/></div>
+        <div class="w3-bar-item"><input class="w3-radio" type="radio" name="colorscale" onchange="updateUI();datamap.applyColorScale(this.value)" value="imgs/MAGENTA.png">      <img height="12" width="243" src="imgs/MAGENTA.png"/></div>
+        <div class="w3-bar-item"><input class="w3-radio" type="radio" name="colorscale" onchange="updateUI();datamap.applyColorScale(this.value)" value="imgs/RAINBOW.png">      <img height="12" width="243" src="imgs/RAINBOW.png"/></div>
+        <div class="w3-bar-item"><input class="w3-radio" type="radio" name="colorscale" onchange="updateUI();datamap.applyColorScale(this.value)" value="imgs/GREY.png" checked> <img height="12" width="243" src="imgs/GREY.png"/></div>
+        <div class="w3-bar-item"><input class="w3-radio" type="radio" name="colorscale" onchange="updateUI();datamap.applyColorScale(this.value)" value="imgs/LINGREY.png">      <img height="12" width="243" src="imgs/LINGREY.png"/></div>
+        <div class="w3-bar-item"><input class="w3-radio" type="radio" name="colorscale" onchange="updateUI();datamap.applyColorScale(this.value)" value="imgs/OCS.png">          <img height="12" width="243" src="imgs/OCS.png"/></div>
+        <div class="w3-bar-item"><input class="w3-radio" type="radio" name="colorscale" onchange="updateUI();datamap.applyColorScale(this.value)" value="imgs/LOCS.png">         <img height="12" width="243" src="imgs/LOCS.png"/></div>
+        <div class="w3-bar-item"><input class="w3-radio" type="radio" name="colorscale" onchange="updateUI();datamap.applyColorScale(this.value)" value="imgs/veridis.png">      <img height="12" width="243" src="imgs/veridis.png"/></div>
+        <div class="w3-bar-item"><input class="w3-radio" type="radio" name="colorscale" onchange="updateUI();datamap.applyColorScale(this.value)" value="imgs/turbo.png">        <img height="12" width="243" src="imgs/turbo.png"/></div>
+        <div class="w3-bar-item"><input class="w3-radio" type="radio" name="colorscale" onchange="updateUI();datamap.applyColorScale(this.value)" value="imgs/rocket.png">       <img height="12" width="243" src="imgs/rocket.png"/></div>
+        <div class="w3-bar-item"><input class="w3-radio" type="radio" name="colorscale" onchange="updateUI();datamap.applyColorScale(this.value)" value="imgs/mako.png">         <img height="12" width="243" src="imgs/mako.png"/></div>
+        <div class="w3-bar-item"><input class="w3-radio" type="radio" name="colorscale" onchange="updateUI();datamap.applyColorScale(this.value)" value="imgs/cividis.png">      <img height="12" width="243" src="imgs/cividis.png"/></div>
+        <div class="w3-bar-item"><input class="w3-radio" type="radio" name="colorscale" onchange="updateUI();datamap.applyColorScale(this.value)" value="imgs/magma.png">        <img height="12" width="243" src="imgs/magma.png"/></div>
+        <div class="w3-bar-item"><input class="w3-radio" type="radio" name="colorscale" onchange="updateUI();datamap.applyColorScale(this.value)" value="imgs/plasma.png">       <img height="12" width="243" src="imgs/plasma.png"/></div>
+        <div class="w3-bar-item"><input class="w3-radio" type="radio" name="colorscale" onchange="updateUI();datamap.applyColorScale(this.value)" value="imgs/inferno.png">      <img height="12" width="243" src="imgs/inferno.png"/></div>
       </div>
     </div>
 
-    <a href="#" class="w3-bar-item w3-button w3-right"><img height="24" src="imgs/ParisSaclay.png"/></a><div id="contid" > ff</div>
+    <a href="#" class="w3-bar-item w3-button w3-right"><img height="24" src="imgs/ParisSaclay.png"/></a><div id="contid"> </div>
   </div>
 </div>
 </body>

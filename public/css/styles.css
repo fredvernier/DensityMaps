@@ -7,7 +7,15 @@ html, body {
   background-image: url("../imgs/BackgroundBleuC.gif");
 }
 
+.w3-top{
+  filter:drop-shadow(5px 5px 15px rgba(0,0,0,0.5));
+}
+
 canvas{
- /* filter:drop-shadow(5px 5px 15px rgba(0,0,0,0.5));*/
- border : 1px solid black;
+ /* 
+ border : 1px solid black;*/
+}
+
+#colorramps .w3-bar-item{
+  padding : 0 8px 0 8px; 
 }

@@ -24,7 +24,7 @@
           0, 0,16,16,16, 8, 0, 0,
           0, 0, 0, 0, 0, 0, 0, 0
         ])
-      }, 'container0', 4);
+      }, 'container0', 8);
       datamap0.render();
 
       let datamap1 = await DensityMaps.load({
@@ -42,18 +42,42 @@
           0,16,16, 1, 1,11,16, 0,
           0, 0, 0, 0, 0, 0, 0, 0
         ])
-      }, 'container1', 4);
+      }, 'container1', 8);
       datamap1.render();
+
+      let exSize= 256;
+      let data2 = new Float32Array(exSize*exSize);
+      for (let j=0; j<exSize; j++)
+        for (let i=0; i<exSize; i++)
+          data2[i+j*exSize] = Math.max(0, exSize/2-Math.sqrt((j-exSize/2)*(j-exSize/2)+(i-exSize/2)*(i-exSize/2)));
+      let datamap2 = await DensityMaps.load({
+        width: exSize,
+        height:exSize,
+        data: data2
+      }, 'container2', 1);
+      datamap2.params.mi=1;
+      datamap2.params.ma=exSize/2-1;
+      datamap2.applyColorScale("imgs/HEATED.png")
+      datamap2.render();
+
+      let datamap3 = await DensityMaps.load("imgs/nyc_dropoff_yellow256_WB.png", 'container3', 1);
+      datamap3.params.mi=0;
+      datamap3.params.ma=10000;
+      datamap3.applyColorScale("imgs/BTC.png")
+      datamap3.render();
     }
   </script>
 </head>
 
 
 <body onload="init()">
-  <h1>Tests </h1>
-  <span id="container0"></span>ensity  <span id="container1"></span>aps
+  <h1>Examples </h1>
+  <h2>
+    <span id="container0"></span>ensity  <span id="container1"></span>aps
+  </h2>
 
-  
+  <div id="container2"></div>
+  <div id="container3"></div>
 </body>
 
 </html>
