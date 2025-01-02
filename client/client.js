@@ -357,10 +357,10 @@ ${dataSource.data.length} != ${dataSource.width * dataSource.height}`
           let bb2 = (max(0.0,f32(input.val)-globAdjust[0]))/(globAdjust[1]-globAdjust[0]); 
           if (f32(input.val)<globAdjust[0]){
             return vec4f(0.0, 0.0, 0.0, 0.0);
-            //return textureSampleLevel(ourTexture, ourSampler, vec2f(0.1, 0.1),0 );
+            //return textureSampleLevel(ourTexture, ourSampler, vec2f(0.1, 0.1),0.0 );
           } else {
             //return vec4f(bb2, bb2, bb2, 1.0);//input.cell/grid
-            return textureSampleLevel(ourTexture, ourSampler, vec2f(bb2, 0.5),0 );
+            return textureSampleLevel(ourTexture, ourSampler, vec2f(bb2, 0.5), 0.0);
           }
         }
 
