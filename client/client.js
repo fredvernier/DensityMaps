@@ -53,9 +53,24 @@ export default class DensityMaps {
   }
 
   static async loadImageBitmap(url) {
-    const res = await fetch(url);
-    const blob = await res.blob();
-    return await createImageBitmap(blob, { colorSpaceConversion: 'none' });
+    var img;
+    if (url == '') {
+      //console.log("Creating a grey texture");
+      const size = 256;
+      const data = new Uint8ClampedArray(4*size);
+      for (let i = 0; i < size*4; i += 4) {
+        data[i + 0] = i;
+        data[i + 1] = i;
+        data[i + 2] = i;
+        data[i + 3] = 255;
+      }
+      img = new ImageData(data, size);
+    }
+    else {
+      const res = await fetch(url);
+      img = await res.blob();
+    }
+    return await createImageBitmap(img, { colorSpaceConversion: 'none' });
   }
 
   async applyColorScale(url){
@@ -251,7 +266,7 @@ ${dataSource.data.length} != ${dataSource.width * dataSource.height}`
       usage: GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST,
     });
 
-    await this.applyColorScale("imgs/GREY.png");
+    await this.applyColorScale(''); // grey by default
 
     this.#device.queue.writeBuffer(this.#vertexBuffer, /*bufferOffset=*/0, this.#vertices);
     const vertexBufferLayout = {
