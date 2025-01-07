@@ -42,7 +42,6 @@ app.get('/p', (req, res) => {
   //console.log(req.query.dataname)
 
   let img=fastpng.decode(binary);
-  //console.log(img)
   //console.log(img.width+"x"+img.height)
   let imgdata = img.data;
   let min0 = imgdata[0], max0 = imgdata[0], sum=0;
@@ -51,10 +50,10 @@ app.get('/p', (req, res) => {
     max0 = Math.max(max0,imgdata[i]);
     sum += imgdata[i];
   }
-  img.text = sum;
+  img.text={"min":min0, "max":max0, "sum":sum};
   //console.log("res= "+min0+" ... "+max0+" => "+sum)
   res.set('content-type', "image/png");
-  let img2=fastpng.encode(img);
+  const img2=fastpng.encode(img);
   
   res.send(Buffer.from(img2.buffer));
 });
