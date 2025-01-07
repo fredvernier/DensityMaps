@@ -6,6 +6,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>test of density Maps #1</title>
   <link rel="stylesheet" href="css/styles.css">
+  <style>
+    #container0, #container1 {display:inline-block;}
+    p {color:blue;}
+  </style>
   <script src="../dist/densityMaps.js"></script>
   <script>
     async function init(){
@@ -53,18 +57,37 @@
       let datamap2 = await DensityMaps.load({
         width: exSize,
         height:exSize,
+        depth:16,
         data: data2
       }, 'container2', 1);
       datamap2.params.mi=1;
       datamap2.params.ma=exSize/2-1;
-      datamap2.applyColorScale("imgs/HEATED.png")
+      datamap2.updateColorRamp("imgs/HEATED.png")
       datamap2.render();
 
       let datamap3 = await DensityMaps.load("imgs/nyc_dropoff_yellow256_WB.png", 'container3', 1);
       datamap3.params.mi=0;
       datamap3.params.ma=10000;
-      datamap3.applyColorScale("imgs/BTC.png")
+      datamap3.updateColorRamp("imgs/BTC.png")
       datamap3.render();
+
+      let datamap4 = await DensityMaps.load("imgs/perlin2048.png", 'container4',  0.25);
+      datamap4.params.mi=0;
+      datamap4.params.ma=255;
+      datamap4.updateColorRamp("imgs/LOCS.png")
+      datamap4.render();
+
+      let datamap5 = await DensityMaps.load("imgs/perlin64.png", 'container5',  0.25);
+      datamap5.params.mi=0;
+      datamap5.params.ma=255;
+      datamap5.updateColorRamp("imgs/MAGENTA.png")
+      datamap5.render();
+
+      let datamap6 = await DensityMaps.load("imgs/WorldBlueGreen.png", 'container6', 0.25);
+      datamap6.params.mi=0;
+      datamap6.params.ma=10000;
+      datamap3.updateColorRamp("imgs/magma.png")
+      datamap6.render();
     }
   </script>
 </head>
@@ -75,9 +98,11 @@
   <h2>
     <span id="container0"></span>ensity  <span id="container1"></span>aps
   </h2>
-
-  <div id="container2"></div>
-  <div id="container3"></div>
+  <table>
+    <tr><td><div id="container2"></div></td><td><div id="container3"></div></td></tr>
+    <tr><td><div id="container4"></div></td><td><div id="container5"></div></td></tr>
+    <tr><td><div id="container6"></div></td><td><div id="container7"></div></td></tr>
+</table>
 </body>
 
 </html>

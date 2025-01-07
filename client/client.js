@@ -64,9 +64,24 @@ export default class DensityMaps {
   }
 
   static async loadImageBitmap(url) {
-    const res = await fetch(url);
-    const blob = await res.blob();
-    return await createImageBitmap(blob, { colorSpaceConversion: 'none' });
+    var img;
+    if (url == '') {
+      //console.log("Creating a grey texture");
+      const size = 256;
+      const data = new Uint8ClampedArray(4*size);
+      for (let i = 0; i < size*4; i += 4) {
+        data[i + 0] = i;
+        data[i + 1] = i;
+        data[i + 2] = i;
+        data[i + 3] = 255;
+      }
+      img = new ImageData(data, size);
+    }
+    else {
+      const res = await fetch(url);
+      img = await res.blob();
+    }
+    return await createImageBitmap(img, { colorSpaceConversion: 'none' });
   }
 
   async updateColorRamp(url) {
@@ -365,10 +380,10 @@ ${dataSource.data.length} != ${dataSource.width * dataSource.height}`
           let bb2 = (max(0.0,f32(input.val)-globAdjust[0]))/(globAdjust[1]-globAdjust[0]); 
           if (f32(input.val)<globAdjust[0]){
             return vec4f(0.0, 0.0, 0.0, 0.0);
-            //return textureSampleLevel(ourTexture, ourSampler, vec2f(0.1, 0.1),0 );
+            //return textureSampleLevel(ourTexture, ourSampler, vec2f(0.1, 0.1),0.0 );
           } else {
             //return vec4f(bb2, bb2, bb2, 1.0);//input.cell/grid
-            return textureSampleLevel(ourTexture, ourSampler, vec2f(bb2, 0.5),0 );
+            return textureSampleLevel(ourTexture, ourSampler, vec2f(bb2, 0.5), 0.0);
           }
         }
 
@@ -851,11 +866,11 @@ ${dataSource.data.length} != ${dataSource.width * dataSource.height}`
 
     let mi = this.#cellStateArray[0];
     let ma = this.#cellStateArray[0];
-    let nbz = 0;
+    //let nbz = 0;
     for (let i=0; i<this.#cellStateArray.length; i++){
       mi = Math.min(mi, this.#cellStateArray[i]);
       ma = Math.max(ma, this.#cellStateArray[i]);
-      if(this.#cellStateArray[i]===0) nbz++;
+      //if(this.#cellStateArray[i]===0) nbz++;
     }
     this.params.min = mi;
     this.params.max = ma;
