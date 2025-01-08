@@ -77,6 +77,9 @@ export default class DensityMaps {
       }
       img = new ImageData(data, size);
     }
+    else if (url.startsWith('data:image/')) {
+      img = url;
+    }
     else {
       const res = await fetch(url);
       img = await res.blob();
