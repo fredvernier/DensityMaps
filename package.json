@@ -1,6 +1,6 @@
 {
   "name": "densitymaps",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
   "description": "displaying multi-class density maps using web gpu",
   "main": "server/server.js",
