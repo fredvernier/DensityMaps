@@ -30,7 +30,7 @@ export default class DensityMaps {
   #renderPipeline;
   #vertexBuffer;
   #vertices;
-  #cellStateArray;
+  #dataArray;
   #cellStateStorage;
   #texture;
   #sampler;
@@ -43,6 +43,7 @@ export default class DensityMaps {
   #img;
   #pipelines = [];
   #gk;
+  pickvalue;
   canvas;
   canvas2;
 
@@ -56,7 +57,8 @@ export default class DensityMaps {
     blurtype: '',
     colorscale: '',
     displayLegend:false,
-    legendTickCount: 6
+    legendTickCount: 8,
+    legendLength: 256
   };
 
   constructor() {
@@ -64,8 +66,9 @@ export default class DensityMaps {
   }
 
   static async loadImageBitmap(url) {
+    //console.log("loadImageBitmap"+window.location.protocol)
     var img;
-    if (url == '') {
+    if (url == '' || window.location.protocol=='file:') {
       //console.log("Creating a grey texture");
       const size = 256;
       const data = new Uint8ClampedArray(4*size);
@@ -252,11 +255,18 @@ ${dataSource.data.length} != ${dataSource.width * dataSource.height}`
   }
 
   async init() {
-    //console.log("init ")
-    // var globCanvasrect = this.canvas.getBoundingClientRect();
-    // this.canvas.addEventListener("mousemove", function(e){
-    //   console.log((e.clientX-globCanvasrect.left)+","+(e.clientY-globCanvasrect.top));
-    // });
+    console.log("init ");
+    let self = this
+     
+    this.canvas2.addEventListener("mousemove", function(e){
+      //console.log(e.clientX+","+e.clientY);
+      let globCanvasrect = self.canvas2.getBoundingClientRect();
+      let x = Math.floor(e.clientX-globCanvasrect.left);
+      let y =  Math.floor(e.clientY-globCanvasrect.top);
+      self.pickvalue = self.#dataArray[x+y*self.#GRID_SIZE_X];
+      self.render();
+      //console.log(x+","+y);
+    });
 
     if (!this.#img) return;
     this.#GRID_SIZE_X = this.#img.width;
@@ -716,7 +726,7 @@ ${dataSource.data.length} != ${dataSource.width * dataSource.height}`
   }
 
   async updateDataFilter() {
-    console.log("updateDataFilter "+this.params.bilat);
+    //console.log("updateDataFilter "+this.params.bilat);
     this.#gk = DensityMaps.makeGaussKernel(this.params.radius);
 
     this.reset();
@@ -806,22 +816,29 @@ ${dataSource.data.length} != ${dataSource.width * dataSource.height}`
 
     let ctx = this.canvas2.getContext("2d");
     if(this.params.displayLegend===true){
+      ctx.clearRect(0, 0, this.canvas2.width, this.canvas2.height);
       ctx.fillStyle = "white";
-      ctx.fillRect(8, 8, this.#legend.width, 48);
-      ctx.drawImage(this.#legend, 8, 8, this.#legend.width, 24);
+      ctx.fillRect(8, 8, this.params.legendLength+2*14, 38);
+      ctx.drawImage(this.#legend, 8+14, 8, this.params.legendLength, 24);
 
       ctx.beginPath(); 
       ctx.strokeStyle = "black";
-      for(let i=0; i<this.#legend.width; i+=(this.#legend.width-1)/this.params.legendTickCount){
-        ctx.moveTo(8+i, 32); 
-        ctx.lineTo(8+i, 36); 
+      for(let i=0; i<this.params.legendLength; i+=(this.params.legendLength-1)/this.params.legendTickCount){
+        ctx.moveTo(8+14+i, 30); 
+        ctx.lineTo(8+14+i, 34); 
       }
+      let pickx = (this.pickvalue-this.params.mi)*this.params.legendLength/(this.params.ma-this.params.mi);
+      console.log(this.pickvalue+" => "+pickx);
+
+      ctx.moveTo(8+14+pickx, 4); 
+      ctx.lineTo(8+14+pickx, 26); 
+
       ctx.fillStyle = "black";
       ctx.font = "12px sans serif";
       ctx.textAlign = "center";
       ctx.textBaseline = "top";
-      for(let i=0; i<this.#legend.width; i+=(this.#legend.width-1)/this.params.legendTickCount){
-        ctx.fillText(Math.round(this.params.mi+i*(this.params.ma-this.params.mi)/this.params.legendTickCount), 8+i, 32+4); 
+      for(let i=0; i<this.params.legendLength; i+=(this.params.legendLength-1)/this.params.legendTickCount){
+        ctx.fillText(Math.round(this.params.mi+i*(this.params.ma-this.params.mi)/this.params.legendLength), 8+14+i, 32+4); 
       }
       ctx.stroke();
       //ctx.line(0,0,this.canvas2.width, this.canvas2.height);
@@ -834,7 +851,7 @@ ${dataSource.data.length} != ${dataSource.width * dataSource.height}`
     //console.log("reset")
     //console.log(this.#img)
     if (!this.#img.channels || this.#img.channels===1)
-      this.#cellStateArray = Uint32Array.from(this.#img.data); // copy and truncate
+      this.#dataArray = Uint32Array.from(this.#img.data); // copy and truncate
     else if (this.#img.channels===4 && this.#img.depth===8){
       let tr = new Uint32Array(this.#img.data.length/4);
       for(let i=0; i<tr.length; i++){
@@ -844,44 +861,44 @@ ${dataSource.data.length} != ${dataSource.width * dataSource.height}`
           tr[i] = 0;//-64-(this.#img.data[i*4+2]<<8|this.#img.data[i*4+1]);
        // tr[i] = this.#img.data[i*4+0]*256*256*256+this.#img.data[i*4+1]*256*256+this.#img.data[i*4+2]*256+this.#img.data[i*4+3];
       }
-      this.#cellStateArray = Uint32Array.from(tr);
+      this.#dataArray = Uint32Array.from(tr);
     } else if (this.#img.channels===3 && this.#img.depth===8){
       let tr = new Uint8Array(this.#img.data.length/3);
       for(let i=0; i<tr.length; i++)
         tr[i] = this.#img.data[i*3];
       
-      this.#cellStateArray = Uint32Array.from(tr);
+      this.#dataArray = Uint32Array.from(tr);
     }
     this.#cellStateStorage = [
       this.#device.createBuffer({
         label: "Cell State A",
-        size: this.#cellStateArray.byteLength,
+        size: this.#dataArray.byteLength,
         usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST,
       }),
       this.#device.createBuffer({
         label: "Cell State B",
-        size: this.#cellStateArray.byteLength,
+        size: this.#dataArray.byteLength,
         usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST,
       })
     ];
     this.updateDataBindGroup();
     this.updateRenderBindGroup();
 
-    let mi = this.#cellStateArray[0];
-    let ma = this.#cellStateArray[0];
+    let mi = this.#dataArray[0];
+    let ma = this.#dataArray[0];
     //let nbz = 0;
-    for (let i=0; i<this.#cellStateArray.length; i++){
-      mi = Math.min(mi, this.#cellStateArray[i]);
-      ma = Math.max(ma, this.#cellStateArray[i]);
-      //if(this.#cellStateArray[i]===0) nbz++;
+    for (let i=0; i<this.#dataArray.length; i++){
+      mi = Math.min(mi, this.#dataArray[i]);
+      ma = Math.max(ma, this.#dataArray[i]);
+      //if(this.#dataArray[i]===0) nbz++;
     }
     this.params.min = mi;
     this.params.max = ma;
     this.params.mi = Math.round(mi+(ma-mi)/64);
     this.params.ma = Math.round(ma-(ma-mi)/64);
     //console.log(mi+" ... "+ma+"  nbz="+nbz+"/"+this.#img.data.length)
-    this.#device.queue.writeBuffer(this.#cellStateStorage[0], 0, this.#cellStateArray);
-    this.#device.queue.writeBuffer(this.#cellStateStorage[1], 0, this.#cellStateArray);
+    this.#device.queue.writeBuffer(this.#cellStateStorage[0], 0, this.#dataArray);
+    this.#device.queue.writeBuffer(this.#cellStateStorage[1], 0, this.#dataArray);
     
   }
 }
