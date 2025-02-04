@@ -446,7 +446,11 @@ ${dataSource.data.length} != ${dataSource.width * dataSource.height}`
         struct VertexOutput {
           @builtin(position) pos: vec4f,
           @location(0) cell: vec2f, 
-          @location(1) @interpolate(flat) val: u32 
+          @location(1) @interpolate(flat) val: u32,
+          @location(2) @interpolate(flat) valr: u32, 
+          @location(3) @interpolate(flat) vall: u32,
+          @location(4) @interpolate(flat) valt: u32, 
+          @location(5) @interpolate(flat) valb: u32 
         };
 
         @group(0) @binding(0) var<uniform> grid: vec2f;
@@ -468,19 +472,31 @@ ${dataSource.data.length} != ${dataSource.width * dataSource.height}`
           output.pos = vec4f(gridPos, 0, 1);
           output.cell = cell; 
           output.val = cellState[input.instance]; 
+          output.valr = cellState[input.instance+1]; 
+          output.vall = cellState[input.instance-1]; 
+          output.valt = cellState[input.instance-u32(grid.x)]; 
+          output.valb = cellState[input.instance+u32(grid.x)]; 
           return output;
         }
           
         struct FragInput {
           @location(0) cell: vec2f,
-          @location(1) @interpolate(flat)  val: u32,
+          @location(1) @interpolate(flat)  val:  u32,
+          @location(2) @interpolate(flat)  valr: u32,
+          @location(3) @interpolate(flat)  vall: u32,
+          @location(4) @interpolate(flat)  valt: u32,
+          @location(5) @interpolate(flat)  valb: u32
         };
 
         @fragment
         fn fragmentMain(input: FragInput) -> @location(0) vec4f {
+          var pi = 3.14159;         
           let bb1 = 1-max(input.cell.x/grid.x, input.cell.y/grid.y);
           let bb2 = (max(0.0,f32(input.val)-globAdjust[0]))/(globAdjust[1]-globAdjust[0]); 
-          if (f32(input.val)<globAdjust[0]){
+          if (f32(input.val/100)!=f32(input.valr/100) || f32(input.val/100)!=f32(input.valb/100)){
+            let sa = (atan2(f32(input.valb-input.valt), f32(input.valr-input.vall))+pi)/(pi*2.0);
+            return vec4f(sa, sa, sa, 1.0);
+          } else if (f32(input.val)<globAdjust[0]){
             return vec4f(0.0, 0.0, 0.0, 0.0);
             //return textureSampleLevel(ourTexture, ourSampler, vec2f(0.1, 0.1),0.0 );
           } else {
