@@ -16,6 +16,7 @@
   "author": "fred vernier",
   "license": "ISC",
   "dependencies": {
+    "d3": "^7.9.0",
     "ejs": "^3.1.10",
     "express": "^4.21.1",
     "express-session": "^1.18.1",
