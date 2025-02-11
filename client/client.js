@@ -146,13 +146,14 @@ export default class DensityMaps {
   }
 
   async updateScales(){
+    return;
     //console.log("updateScales for "+this.params.mi+", "+ this.params.ma+" => "+this.params.displayLegend);
     const svg = d3.select(this.svg);
     svg.selectAll("*").remove();
 
     if(this.params.displayLegend===true){
       let gg = svg.append("g")       
-        .attr("transform", 'translate('+this.params.legendLeftMargin+', '+this.params.legendTopMargin+')') 
+        .attr("transform", 'translate('+(this.params.legendLeftMargin||0)+', '+(this.params.legendTopMargin||0)+')') 
         
       const x = d3.scaleLinear()
         .domain([this.params.mi, this.params.ma])
@@ -367,6 +368,8 @@ ${dataSource.data.length} != ${dataSource.width * dataSource.height}`
       device: this.#device,
       format: canvasFormat,
       alphaMode: 'premultiplied',
+      preserveDrawingBuffer : true,
+      //crossOrigin: 'anonymous',
     });
 
     // create data positions and send them to the queue
@@ -435,6 +438,7 @@ ${dataSource.data.length} != ${dataSource.width * dataSource.height}`
     this.#device.queue.writeBuffer(this.#uniformAdjustBuffer, 0, uniformAdjustArray);
 
     // create the shaders
+    //https://webgpufundamentals.org/webgpu/lessons/webgpu-wgsl.html
     const cellShaderModule = this.#device.createShaderModule({
       label: "Cell shader",
       code: `
@@ -471,7 +475,7 @@ ${dataSource.data.length} != ${dataSource.width * dataSource.height}`
           var output: VertexOutput;
           output.pos = vec4f(gridPos, 0, 1);
           output.cell = cell; 
-          output.val = cellState[input.instance]; 
+          output.val  = cellState[input.instance]; 
           output.valr = cellState[input.instance+1]; 
           output.vall = cellState[input.instance-1]; 
           output.valt = cellState[input.instance-u32(grid.x)]; 
@@ -493,8 +497,10 @@ ${dataSource.data.length} != ${dataSource.width * dataSource.height}`
           var pi = 3.14159;         
           let bb1 = 1-max(input.cell.x/grid.x, input.cell.y/grid.y);
           let bb2 = (max(0.0,f32(input.val)-globAdjust[0]))/(globAdjust[1]-globAdjust[0]); 
-          if (f32(input.val/100)!=f32(input.valr/100) || f32(input.val/100)!=f32(input.valb/100)){
-            let sa = (atan2(f32(input.valb-input.valt), f32(input.valr-input.vall))+pi)/(pi*2.0);
+          if (f32(input.val/1000)!=f32(input.valr/1000) || f32(input.val/1000)!=f32(input.valb/1000)){
+            let sa = abs(( 
+                         atan2(f32(input.valb-input.valt), f32(input.valr-input.vall))
+                        )/pi);
             return vec4f(sa, sa, sa, 1.0);
           } else if (f32(input.val)<globAdjust[0]){
             return vec4f(0.0, 0.0, 0.0, 0.0);
@@ -504,7 +510,6 @@ ${dataSource.data.length} != ${dataSource.width * dataSource.height}`
             return textureSampleLevel(ourTexture, ourSampler, vec2f(bb2, 0.5), 0.0);
           }
         }
-
       `
     });
 
@@ -831,7 +836,7 @@ ${dataSource.data.length} != ${dataSource.width * dataSource.height}`
   }
 
   async updateDataFilter() {
-    //console.log("updateDataFilter "+this.params.bilat);
+    //console.log("updateDataFilter "+this.params.radius);
     this.#gk = DensityMaps.makeGaussKernel(this.params.radius);
 
     this.reset();
@@ -867,6 +872,7 @@ ${dataSource.data.length} != ${dataSource.width * dataSource.height}`
 
   // Move all of our rendering code into a function
   updateData() {
+    
     if (!this.#device) return;
     //let t = performance.now();
     // Move the encoder creation to the top of the function.

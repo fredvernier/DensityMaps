@@ -11,11 +11,25 @@
   <script type="module" src="js/client.js"></script>
   <script>
     let datamap;
+
+    function putImage() {
+      console.log("putImage");
+      var canvas1 = document.getElementById("cantag");        
+      if (canvas1.getContext) {        
+        var ctx = canvas1.getContext("2d");                
+        var myImage = canvas1.toDataURL("image/png");      
+        console.log(myImage);
+      }
+      var imageElement = document.getElementById("myPix");  
+      imageElement.src = myImage;                           
+      console.log("done");
+    }  
+
     async function switchVis(map, containerid){
       document.getElementById("msg").style.display = 'none';
-      datamap = await DensityMaps.load(map, containerid);
+      datamap = await DensityMaps.load(map, containerid, 1, "cantag");
       datamap.params.displayLegend= true;
-      document.getElementById('mi').min = datamap.params.min
+      document.getElementById('mi').min = datamap.params.min1024
       document.getElementById('mi').max = datamap.params.max
       document.getElementById('mi').value= datamap.params.mi
       document.getElementById('ma').min = datamap.params.min
@@ -50,6 +64,7 @@
       //console.log(datamap.params.mi+"..."+datamap.params.ma)
 
       datamap.params.blurtype = document.querySelector( 'input[name="blurtype"]:checked').value;
+      //console.log(document.getElementById('rblur').value)
       datamap.params.radius = parseFloat(document.getElementById('rblur').value);  
       datamap.params.bilat  = parseFloat(document.getElementById('bblur').value);  
       datamap.params.colorscale = document.querySelector( 'input[name="colorscale"]:checked').value;
@@ -95,7 +110,6 @@
           <div class="w3-bar-item"><input class="w3-input" onchange="updateUI();datamap.render()" oninput="updateUI();datamap.render()" type="range" id="ma" name="ma" min="0" max="100000" value="54000"></div>
           <div class="w3-bar-item"><input class="w3-radio" type="radio" name="colorscale" onchange="updateUI();datamap.updateColorRamp(this.value)" value="imgs/BTC.png">          <img height="12" width="243" src="imgs/BTC.png"/></div>
           <div class="w3-bar-item"><input class="w3-radio" type="radio" name="colorscale" onchange="updateUI();datamap.updateColorRamp(this.value)" value="imgs/BTY.png">          <img height="12" width="243" src="imgs/BTY.png"/></div>
-
           <div class="w3-bar-item"><input class="w3-radio" type="radio" name="colorscale" onchange="updateUI();datamap.updateColorRamp(this.value)" value="imgs/HEATED.png">       <img height="12" width="243" src="imgs/HEATED.png"/></div>
           <div class="w3-bar-item"><input class="w3-radio" type="radio" name="colorscale" onchange="updateUI();datamap.updateColorRamp(this.value)" value="imgs/MAGENTA.png">      <img height="12" width="243" src="imgs/MAGENTA.png"/></div>
           <div class="w3-bar-item"><input class="w3-radio" type="radio" name="colorscale" onchange="updateUI();datamap.updateColorRamp(this.value)" value="imgs/RAINBOW.png">      <img height="12" width="243" src="imgs/RAINBOW.png"/></div>
@@ -120,7 +134,8 @@
 <div id="contforvis" class="w3-container"> 
    
 </div>
-
+<button onclick="putImage()">snapshot</button>
+<img id="myPix"/>
 </body>
 
 </html>
